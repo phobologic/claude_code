@@ -284,6 +284,22 @@ You can view an [example of a final multi-review report](examples/multi-review-e
 - **Importance**: Critical
 ```
 
+### Feature Completion
+
+The `/feature-complete` command helps you merge completed features back to main:
+
+```bash
+# In Claude Code interactive mode
+/feature-complete
+```
+
+This command:
+- Checks for uncommitted changes (requires clean working directory)
+- Analyzes all commits in your feature branch
+- Generates a comprehensive merge commit message
+- Performs a squash merge to main
+- Suggests optional cleanup steps
+
 ### Commit Messages
 
 Use the `/commit` command to generate clear, concise, and descriptive commit messages following best practices:
@@ -399,11 +415,14 @@ The most effective way to develop features with Claude Code follows this careful
    ```
 
 4. **Feature Completion**
-   ```bash
-   # When feature is complete, merge to main
-   git checkout main
-   git merge --squash feature/user-authentication
-   git commit -m "Add user authentication feature"
+   ```
+   # When feature is complete, use the feature-complete command
+   /feature-complete
+   # This will:
+   # - Check for uncommitted changes
+   # - Create a comprehensive commit message from all feature commits
+   # - Perform a squash merge to main
+   # - Provide cleanup instructions
    ```
 
 #### Key Points About This Workflow
@@ -496,10 +515,9 @@ All documentation (requirements, design, plan) will be stored in the feature dir
 
 # Continue with remaining phases...
 
-# Step 6: Merge feature when complete
-git checkout main
-git merge --squash feature/user-authentication
-git commit -m "Add user authentication feature"
+# Step 6: Complete the feature
+/feature-complete
+# Automatically merges to main with comprehensive commit message
 ```
 
 You can work on multiple features by switching between them:

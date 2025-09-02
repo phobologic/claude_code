@@ -31,6 +31,7 @@ This repository contains standards, examples, and tools to help teams effectivel
 - `/plan` - Create detailed implementation plans with test-driven development steps
 - `/phase <Phase X>` - Implement specific phases from the plan
 - `/feature <name>` - Create feature workspace and git branch (or switch to existing)
+- `/feature-complete` - Merge completed feature to main with squash merge
 
 ### Review Commands
 - `/review` - Perform standard code review of uncommitted changes
@@ -60,7 +61,7 @@ This repository contains standards, examples, and tools to help teams effectivel
    - `/multi-review` - Review implementation
    - Fix Critical/High issues and `/commit`
    - Continue with X.2, X.3 as needed
-6. `git merge --squash` when feature is complete
+6. `/feature-complete` - Squash merge to main with comprehensive commit message
 
 ### Code Review Process
 - Reviews analyze uncommitted changes
