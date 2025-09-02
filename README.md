@@ -17,42 +17,151 @@ This repository serves as a guide for best practices and contains examples to he
 
 ## Getting Started
 
-### Installation
+### Prerequisites
 
-To install Claude Code, follow the instructions in the [official documentation](https://docs.anthropic.com/en/docs/claude-code/quickstart).
+You need to have Claude Code installed. See the [official installation guide](https://docs.anthropic.com/en/docs/claude-code/quickstart) for instructions.
 
-Once installed, you can start an interactive session:
+### Installing These Custom Commands
 
-```bash
-# Start Claude Code interactive mode
-claude
-```
+You have several options for using the commands and agents from this repository:
 
-### Basic Configuration
+#### Option 1: Copy to Your Project (Recommended)
 
-Claude Code uses a settings file for configuration. Create your local settings file (which should not be committed to the repository, as it's included in the `.gitignore` file):
+Best for: Teams who want to customize commands for their specific needs.
 
 ```bash
-# Create a local settings file
-touch settings.local.json
+# Copy the commands to your project
+cp -r /path/to/this/repo/commands .claude/
+cp -r /path/to/this/repo/agents .claude/
+
+# Now customize them for your project's needs
 ```
 
-Configure permissions and other settings in your `settings.local.json` file. Example:
+**Pros:**
+- Full control over customization
+- Can modify commands to match your workflow
+- Version controlled with your project
 
-```json
+**Cons:**
+- No automatic updates from upstream
+- Need to manually sync improvements
+
+#### Option 2: Symlink to Personal Directory
+
+Best for: Individual developers who want these commands available across all projects.
+
+```bash
+# Create symlinks in your home directory
+mkdir -p ~/.claude/commands
+ln -s /path/to/this/repo/commands/* ~/.claude/commands/
+ln -s /path/to/this/repo/agents ~/.claude/agents
+```
+
+**Pros:**
+- Available in all your projects
+- Easy to update by pulling this repo
+
+**Cons:**
+- Can't have project-specific variations
+- Team members need to set up individually
+
+#### Option 3: Git Submodule
+
+Best for: Teams who want to track a specific version while allowing updates.
+
+```bash
+# Add as a submodule
+git submodule add https://github.com/yourusername/claude_code.git .claude-shared
+
+# Create symlinks to the commands
+ln -s .claude-shared/commands .claude/commands
+ln -s .claude-shared/agents .claude/agents
+
+# Commit the symlinks (not the actual files)
+git add .claude/
+git commit -m "Add Claude Code custom commands"
+```
+
+**Pros:**
+- Version controlled with your project
+- Can update to newer versions when ready
+- Whole team gets same version
+
+**Cons:**
+- Requires understanding of git submodules
+- Can't easily modify individual commands
+
+#### Option 4: Fork and Customize
+
+Best for: Teams with specific workflows who want to maintain their own version.
+
+```bash
+# Fork this repository on GitHub
+# Clone your fork
+git clone https://github.com/yourusername/claude_code_fork.git
+
+# Copy commands to your project
+cp -r claude_code_fork/commands .claude/
+cp -r claude_code_fork/agents .claude/
+```
+
+**Pros:**
+- Complete control over your command set
+- Can contribute improvements back upstream
+- Can pull updates from original repo
+
+**Cons:**
+- Need to maintain your fork
+- More complex setup
+
+### Configuration
+
+Claude Code uses hierarchical settings files:
+
+1. **User settings** (`~/.claude/settings.json`) - Apply to all your projects
+2. **Project settings** (`.claude/settings.json`) - Shared with team via version control  
+3. **Local settings** (`.claude/settings.local.json`) - Personal overrides, not committed
+
+Create a local settings file for personal preferences:
+
+```bash
+# Create a local settings file (gitignored)
+cat > .claude/settings.local.json << 'EOF'
 {
   "permissions": {
     "allow": [
       "Bash(mkdir:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git status:*)",
-      "WebFetch(domain:docs.python.org)"
-    ],
-    "deny": []
+      "Bash(git status:*)"
+    ]
   }
 }
+EOF
 ```
+
+### Troubleshooting
+
+**Commands not showing up?**
+- Run `/help` in Claude Code to see available commands
+- Project commands show with "(project)" label
+- User commands show with "(user)" label
+- Make sure your `.claude/commands/` directory structure is correct
+
+**Symlinks not working?**
+- On Windows, you may need to use junction points instead: `mklink /J`
+- Ensure you have proper permissions to create symlinks
+- Use absolute paths, not relative paths
+
+**Agents not being found?**
+- Agents must be in `.claude/agents/` directory
+- Each agent needs proper frontmatter with `name:` and `description:`
+- Agent files must have `.md` extension
+
+**Settings not taking effect?**
+- Check the hierarchy: local settings override project settings override user settings
+- Ensure your JSON is valid (no trailing commas, proper quotes)
+- Restart your Claude Code session after changing settings
 
 ## Slash Command Reference
 
@@ -60,7 +169,6 @@ This repository includes several custom slash commands that demonstrate differen
 
 Claude Code automatically loads custom commands from:
 - Project-specific: `.claude/commands/` directory
-- Repository root `commands/` directory (as in this project)
 - Personal: `~/.claude/commands/` directory
 
 ### Requirements Gathering
@@ -247,24 +355,20 @@ Remember: The goal isn't to move as fast as possible, but to move as fast as sus
 
 The most effective way to develop features with Claude Code follows this careful, iterative pattern:
 
-1. **Create a git branch for your feature**
-   ```bash
-   git checkout -b feature/user-authentication
-   ```
-
-2. **Set up feature workspace**
+1. **Set up feature workspace (automatically creates git branch)**
    ```
    /feature user-authentication
+   # This will create and switch to branch: feature/user-authentication
    ```
 
-3. **Planning Phase**
+2. **Planning Phase**
    ```
    /requirements  # Define what you're building
    /design        # Create technical design
    /plan          # Generate implementation plan with phases
    ```
 
-4. **Iterative Implementation Cycle**
+3. **Iterative Implementation Cycle**
    
    **For each sub-phase (recommended approach):**
    ```
@@ -294,7 +398,7 @@ The most effective way to develop features with Claude Code follows this careful
    d. /commit             # Commit entire phase
    ```
 
-5. **Feature Completion**
+4. **Feature Completion**
    ```bash
    # When feature is complete, merge to main
    git checkout main
@@ -335,13 +439,19 @@ The most effective way to develop features with Claude Code follows this careful
 ### Feature Management
 
 The feature management system allows you to:
+- **Automatically create and manage git branches** for each feature
 - Organize work into separate feature workspaces
-- Switch between features you're working on
+- Switch between features (and their branches) seamlessly
 - Keep all documentation for a feature in one place
 - Follow feature progress from requirements to implementation
 - Maintain clean git history with feature branches
 
-Use the `/feature` command to create a new feature workspace or switch to an existing one.
+The `/feature` command will:
+- Create a new branch `feature/<name>` if you're on main/master
+- Switch to existing feature branch if it exists
+- Create a workspace directory `.features/<name>` for all documentation
+- Set the current feature so other commands know where to save files
+
 All documentation (requirements, design, plan) will be stored in the feature directory.
 
 ## Examples
@@ -349,13 +459,11 @@ All documentation (requirements, design, plan) will be stored in the feature dir
 ### Example 1: Feature Development with Feature Management (Recommended)
 
 ```bash
-# Create feature branch
-git checkout -b feature/user-authentication
-
 # In Claude Code interactive mode
 
-# Step 1: Set up a feature workspace
+# Step 1: Set up feature workspace (automatically creates branch)
 /feature user-authentication
+# Now on branch: feature/user-authentication
 
 # Step 2: Create requirements
 /requirements Add user authentication feature
@@ -398,15 +506,15 @@ You can work on multiple features by switching between them:
 
 ```bash
 # Create/switch to another feature
-git checkout -b feature/admin-dashboard
 /feature admin-dashboard
+# Automatically creates and switches to branch: feature/admin-dashboard
 
 # Work on the new feature
 /requirements Admin dashboard for user management
 
 # Switch back to previous feature
-git checkout feature/user-authentication
 /feature user-authentication
+# Automatically switches to existing branch: feature/user-authentication
 
 # Continue working on original feature
 /phase Phase 3.0

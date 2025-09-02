@@ -30,7 +30,7 @@ This repository contains standards, examples, and tools to help teams effectivel
 - `/design` - Generate technical design documents from requirements
 - `/plan` - Create detailed implementation plans with test-driven development steps
 - `/phase <Phase X>` - Implement specific phases from the plan
-- `/feature <name>` - Create or switch between feature workspaces
+- `/feature <name>` - Create feature workspace and git branch (or switch to existing)
 
 ### Review Commands
 - `/review` - Perform standard code review of uncommitted changes
@@ -47,13 +47,12 @@ This repository contains standards, examples, and tools to help teams effectivel
 
 ## Development Workflow
 
-### Recommended Feature Development (with git branches)
-1. `git checkout -b feature/<name>` - Create feature branch
-2. `/feature <name>` - Create feature workspace
-3. `/requirements` - Document requirements
-4. `/design` - Create technical design
-5. `/plan` - Generate implementation plan
-6. For each sub-phase:
+### Recommended Feature Development
+1. `/feature <name>` - Automatically creates feature branch and workspace
+2. `/requirements` - Document requirements
+3. `/design` - Create technical design
+4. `/plan` - Generate implementation plan
+5. For each sub-phase:
    - `/phase Phase X.0` - Write failing tests
    - `/multi-review` - Review test structure
    - Fix issues and `/commit`
@@ -61,7 +60,7 @@ This repository contains standards, examples, and tools to help teams effectivel
    - `/multi-review` - Review implementation
    - Fix Critical/High issues and `/commit`
    - Continue with X.2, X.3 as needed
-7. `git merge --squash` when feature is complete
+6. `git merge --squash` when feature is complete
 
 ### Code Review Process
 - Reviews analyze uncommitted changes
