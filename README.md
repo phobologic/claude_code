@@ -192,37 +192,144 @@ This command helps you create commit messages that:
 - Use imperative mood ("Add support for X")
 - Reference relevant context
 
+## Philosophy: Collaborative AI Development
+
+### Why This Workflow?
+
+This workflow is built on a fundamental principle: **AI coding agents should be treated as highly capable collaborators, not magical solutions**. Like any talented engineer, Claude Code is incredibly smart and productive, but also sometimes overly eager and capable of making mistakes.
+
+The workflow emphasizes:
+
+1. **Incremental Progress Over Big Bangs**
+   - Small changes are easier to review, understand, and fix
+   - Bugs are caught early when they're cheap to fix
+   - You maintain connection with your codebase
+
+2. **Human-in-the-Loop Validation**
+   - AI excels at rapid implementation but benefits from human judgment
+   - Regular review cycles ensure the code aligns with your intentions
+   - You remain the architect; AI is the accelerator
+
+3. **Test-Driven Confidence**
+   - Writing tests first (Phase X.0) clarifies requirements
+   - Tests serve as executable specifications
+   - Failed tests guide implementation
+
+4. **Multiple Perspectives**
+   - Different reviewers catch different issues (logic, performance, security, readability)
+   - Comprehensive review prevents blind spots
+   - Prioritized findings help focus on what matters
+
+5. **Documentation as Foundation**
+   - Requirements → Design → Plan ensures clarity before coding
+   - Documentation serves as a contract between you and the AI
+   - Clear specifications lead to better implementations
+
+6. **Reversibility Through Version Control**
+   - Granular commits make problematic changes easy to undo
+   - Feature branches keep main branch stable
+   - Squash merges provide clean history while preserving granular development
+
+### The Result
+
+This approach yields:
+- **Better code quality** through continuous review and refinement
+- **Deeper understanding** of the codebase through regular engagement
+- **Reduced risk** from small, reversible changes
+- **Faster debugging** when issues are caught early
+- **Sustainable pace** that prevents overwhelming changes
+
+Remember: The goal isn't to move as fast as possible, but to move as fast as sustainable while maintaining quality and understanding.
+
 ## Best Practices
 
-### Common Workflows
+### Recommended Feature Development Workflow
 
-1. **Feature Development Workflow**
-   ```
-   Create Feature → Requirements → Design → Implementation Plan → Implementation → Review
+The most effective way to develop features with Claude Code follows this careful, iterative pattern:
+
+1. **Create a git branch for your feature**
+   ```bash
+   git checkout -b feature/user-authentication
    ```
 
-2. **Multi-Feature Development Workflow**
+2. **Set up feature workspace**
+   ```
+   /feature user-authentication
+   ```
+
+3. **Planning Phase**
+   ```
+   /requirements  # Define what you're building
+   /design        # Create technical design
+   /plan          # Generate implementation plan with phases
+   ```
+
+4. **Iterative Implementation Cycle**
+   
+   **For each sub-phase (recommended approach):**
+   ```
+   a. /phase Phase 1.0    # Write failing tests
+   b. /multi-review       # Review the test structure
+   c. Fix any issues from review
+   d. /commit             # Commit the tests
+   
+   e. /phase Phase 1.1    # Implement first part of functionality
+   f. /multi-review       # Review the implementation
+   g. Fix issues (prioritize Critical and High)
+   h. /commit             # Commit this sub-phase
+   
+   i. /phase Phase 1.2    # Continue implementation as needed
+   j. /multi-review       # Review again
+   k. Fix issues
+   l. /commit             # Commit
+   
+   Move to Phase 2.0 and repeat...
+   ```
+   
+   **Alternative: Full phase at once (when confident):**
+   ```
+   a. /phase Phase 1      # Implement entire phase
+   b. /multi-review       # Review all changes
+   c. Fix issues
+   d. /commit             # Commit entire phase
+   ```
+
+5. **Feature Completion**
+   ```bash
+   # When feature is complete, merge to main
+   git checkout main
+   git merge --squash feature/user-authentication
+   git commit -m "Add user authentication feature"
+   ```
+
+#### Key Points About This Workflow
+
+- **Git Branches**: Each feature gets its own git branch, allowing clean history via squash merge
+- **Granular Commits**: Each sub-phase gets reviewed and committed separately for safety
+- **Test-First**: X.0 sub-phases should always be writing failing tests (TDD approach)
+- **Frequent Reviews**: Run `/multi-review` after EACH sub-phase, not just at phase end
+- **Fix Before Moving On**: Address at least Critical and High priority issues before next sub-phase
+- **Flexibility**: Use full phases only when very confident; default to sub-phases
+
+### Alternative Workflows
+
+1. **Multi-Feature Development Workflow**
    ```
    Create Feature A → Requirements → Design → Implementation Plan → 
    Create Feature B → Requirements → Design → Implementation Plan →
-   Switch to Feature A → Implement Phase 1 →
-   Switch to Feature B → Implement Phase 1 →
+   Switch to Feature A → Implement Phase 1.0 → Review → Commit →
+   Switch to Feature B → Implement Phase 1.0 → Review → Commit →
    ...and so on
    ```
 
-3. **Bug Fix Workflow**
+2. **Bug Fix Workflow**
    ```
-   Review Bug → Plan Fix → Implement → Test → Commit
-   ```
-
-4. **Code Review Workflow**
-   ```
-   Implement → Self-Review → Address Issues → Commit
+   Review Bug → Plan Fix → Implement → Test → /review → Commit
    ```
 
-5. **Multi-Agent Review Workflow**
+3. **Quick Code Review Workflow**
    ```
-   Implement → Multi-Review → Address Issues by Priority → Commit
+   Implement → /review → Address Issues → Commit
    ```
 
 ### Feature Management
@@ -232,15 +339,19 @@ The feature management system allows you to:
 - Switch between features you're working on
 - Keep all documentation for a feature in one place
 - Follow feature progress from requirements to implementation
+- Maintain clean git history with feature branches
 
 Use the `/feature` command to create a new feature workspace or switch to an existing one.
 All documentation (requirements, design, plan) will be stored in the feature directory.
 
 ## Examples
 
-### Example 1: Feature Development with Feature Management
+### Example 1: Feature Development with Feature Management (Recommended)
 
 ```bash
+# Create feature branch
+git checkout -b feature/user-authentication
+
 # In Claude Code interactive mode
 
 # Step 1: Set up a feature workspace
@@ -255,31 +366,50 @@ All documentation (requirements, design, plan) will be stored in the feature dir
 # Step 4: Create implementation plan
 /plan
 
-# Step 5: Implement each phase
-/phase Phase 1
-/phase Phase 2
-
-# Step 6: Review changes
-/review
-
-# Step 7: Commit changes
+# Step 5: Implement with sub-phases (recommended approach)
+/phase Phase 1.0  # Write failing tests
+/multi-review
+# Fix any test structure issues
 /commit
+
+/phase Phase 1.1  # Implement authentication logic
+/multi-review
+# Fix Critical and High priority issues
+/commit
+
+/phase Phase 1.2  # Add error handling
+/multi-review
+# Fix issues
+/commit
+
+/phase Phase 2.0  # Write tests for session management
+/multi-review
+/commit
+
+# Continue with remaining phases...
+
+# Step 6: Merge feature when complete
+git checkout main
+git merge --squash feature/user-authentication
+git commit -m "Add user authentication feature"
 ```
 
 You can work on multiple features by switching between them:
 
 ```bash
 # Create/switch to another feature
+git checkout -b feature/admin-dashboard
 /feature admin-dashboard
 
 # Work on the new feature
 /requirements Admin dashboard for user management
 
 # Switch back to previous feature
+git checkout feature/user-authentication
 /feature user-authentication
 
 # Continue working on original feature
-/phase Phase 3
+/phase Phase 3.0
 ```
 
 ### Example 2: Standard Code Review
