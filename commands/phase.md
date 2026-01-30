@@ -32,4 +32,4 @@ Use context7 mcp if installed if there are any questions about various library d
 
 Remember, we're implementing this feature incrementally, so focus only on the step in qustion for now. Don't worry about future steps - we'll get to those later.
 
-**IMPORTANT:** Please implement the sub-phases (if there are any) of the Phase in order.
+**IMPORTANT:** Please implement the sub-phases (if there are any) of the Phase in order.  Create a todo that matches the sub-phases in the phase, and stick to the correct ordering.

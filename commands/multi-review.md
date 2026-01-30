@@ -15,7 +15,7 @@ touch .code-review/changed-files.txt
 
 It's CRUCIAL that reviewers ONLY analyze files listed in .code-review/changed-files.txt and NOTHING ELSE.
 
-If there are uncommitted changes, use the Task tool to invoke these specialized reviewers:
+If there are uncommitted changes, use the Task tool to invoke these specialized reviewers in parallel:
 
 1. Invoke the code-reviewer-1 sub-agent:
 ```
@@ -45,10 +45,10 @@ Prompt: Review ONLY files in .code-review/changed-files.txt - do NOT examine any
 SubagentType: agents/security-reviewer
 ```
 
-5. After all reviewers complete their analysis, invoke the review-coordinator sub-agent:
+After all reviewers complete their analysis, invoke the review-coordinator sub-agent:
 ```
 Task: Compile review findings
-Prompt: Combine all reviewer findings and write the final report to .code-review/final-report.md
+Prompt: Combine all reviewer findings, combine duplicates, and write the final report to .code-review/final-report.md
 SubagentType: agents/review-coordinator
 ```
 
