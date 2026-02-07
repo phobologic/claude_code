@@ -61,5 +61,5 @@ CLAUDE.md is the source of truth for project conventions. When writing code:
 
 1. Follow the patterns documented in CLAUDE.md
 2. If you notice a recurring pattern not yet listed, point it out to the user
-3. On user confirmation, add the pattern to the relevant section
+3. On user confirmation, add the pattern to `CLAUDE.local.md` (project-specific conventions that evolve during development)
 4. Keep entries concise — every line should prevent a future inconsistency
