@@ -68,6 +68,7 @@ This repository contains standards, examples, and tools to help teams effectivel
 - Multi-review creates reports in `.code-review/` directory
 - Issues are rated by importance: Critical, High, Medium, Low
 - Final reports include file locations and line numbers
+- When `bd` is installed and initialized, `/multi-review` creates issues directly in bd instead of writing to `.code-review/*.md` files. An epic is created per review session with child issues for each finding. Use `bd children <epic-id>` to browse results.
 
 ## Important Notes
 
