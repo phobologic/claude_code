@@ -31,6 +31,28 @@ classmethods (e.g., `SessionConfig.create()`) for complex construction.
 **Paths** — `pathlib.Path` everywhere. JSON written with `indent=2` and trailing
 newline.
 
+## Package Management (uv)
+
+This project uses **uv** as the package manager and task runner. All commands
+run through `uv run` to ensure they execute in the project's virtual environment.
+
+- `uv sync` — install/update dependencies from lockfile
+- `uv add <package>` — add a dependency (updates `pyproject.toml` + `uv.lock`)
+- `uv add --dev <package>` — add a dev dependency
+- `uv lock` — regenerate lockfile without installing
+- `uv run <command>` — run any command in the project's venv
+
+Never use raw `pip install` or `python -m` directly — always go through `uv run`.
+
+## Linting & Formatting (Ruff)
+
+- `uv run ruff check .` — lint
+- `uv run ruff check --fix .` — lint with auto-fix
+- `uv run ruff format .` — format
+
+Ruff also runs automatically via hooks on file edits, but these commands are
+available for manual checks or pre-commit verification.
+
 ## Testing Conventions
 
 - Run: `uv run pytest`
