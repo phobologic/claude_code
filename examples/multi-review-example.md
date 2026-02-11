@@ -1,5 +1,9 @@
 # Code Review Summary
 
+> **Note:** This is an example review report for demonstration purposes. The code snippets below
+> contain **intentionally vulnerable patterns** (SQL injection, missing security flags, etc.) to
+> illustrate what the multi-review system detects. Do not copy these examples into production code.
+
 ## Overview
 
 This review analyzed uncommitted changes across 5 files with approximately 500 lines of code. Found:
