@@ -26,15 +26,20 @@ Check your prompt for `BD_MODE=true EPIC_ID=<id>`. If present, you are in **bd m
 bd children <EPIC_ID> --json
 ```
 
-2. Analyze the issues for duplicates by comparing file paths, line numbers, and descriptions across reviewers. Two issues are duplicates if they refer to the same underlying problem even if described differently.
+2. For any issue that needs closer inspection (to compare descriptions, read code examples, etc.), read its full details:
+```bash
+bd show <id> --json
+```
 
-3. For each duplicate found, mark it using bd's duplicate command:
+3. Identify duplicates: two issues are duplicates if they refer to the same underlying problem, even if described differently by different reviewers. Compare file paths, line ranges, and the core issue described.
+
+4. For each duplicate, mark it. This automatically closes the duplicate and links it to the canonical issue — do NOT separately close it:
 ```bash
 bd duplicate <duplicate-id> --of <canonical-id>
 ```
 Keep the issue with the most complete description as the canonical one.
 
-4. Present an inline summary to the user organized by priority. Do NOT write to any `.code-review/` files. Format the summary as:
+5. Present an inline summary to the user organized by priority. Do NOT write to any `.code-review/` files. Format the summary as:
 
 ```
 ## Code Review Summary
