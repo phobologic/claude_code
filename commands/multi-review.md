@@ -2,15 +2,22 @@
 
 This command performs a comprehensive code review using specialized sub-agents.
 
-First, prepare the environment:
+## Step 1: Setup and detect bd
+
+Run these commands sequentially in a **single Bash call** to prepare the environment and detect bd:
 ```bash
-# Create or clear the .code-review directory
 mkdir -p .code-review
 rm -f .code-review/*.md
 touch .code-review/changed-files.txt
+BD_AVAILABLE=false
+if command -v bd >/dev/null 2>&1; then
+  [ -d .beads ] || bd init
+  BD_AVAILABLE=true
+fi
+echo "BD_AVAILABLE=$BD_AVAILABLE"
 ```
 
-## Determine review scope
+## Step 2: Determine review scope
 
 Parse `$ARGUMENTS` to determine what to review. Set two variables: the file list in `.code-review/changed-files.txt` and `REVIEW_CMD` (passed to reviewers).
 
@@ -33,17 +40,7 @@ Parse `$ARGUMENTS` to determine what to review. Set two variables: the file list
 
 It's CRUCIAL that reviewers ONLY analyze files listed in .code-review/changed-files.txt and NOTHING ELSE.
 
-## Detect bd availability
-
-Before launching reviewers, check if `bd` is available and initialized:
-```bash
-BD_AVAILABLE=false
-if command -v bd >/dev/null 2>&1 && bd info >/dev/null 2>&1; then
-  BD_AVAILABLE=true
-fi
-```
-
-## bd mode setup
+## Step 3: bd mode setup
 
 If `BD_AVAILABLE` is true:
 
@@ -54,7 +51,7 @@ EPIC_ID=$(bd create "<generated title> (<YYYY-MM-DD HH:MM>)" -t epic -p 2 -l "co
 ```
 3. Note the `EPIC_ID` for passing to sub-agents.
 
-## Launch reviewers
+## Step 4: Launch reviewers
 
 If there are files to review, use the Task tool to invoke these specialized reviewers in parallel.
 
@@ -124,7 +121,7 @@ Prompt: REVIEW_CMD=<review_cmd> -- Review ONLY files in .code-review/changed-fil
 SubagentType: security-reviewer
 ```
 
-## Coordination
+## Step 5: Coordination
 
 After all reviewers complete their analysis, invoke the review-coordinator sub-agent:
 
@@ -142,7 +139,7 @@ Prompt: Combine all reviewer findings, combine duplicates, and write the final r
 SubagentType: review-coordinator
 ```
 
-## Completion
+## Step 6: Completion
 
 ### bd mode
 When complete, inform the user that the review is finished and provide the epic ID. Tell them they can browse issues with:

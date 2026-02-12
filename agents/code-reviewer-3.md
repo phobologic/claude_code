@@ -62,7 +62,7 @@ Priority mapping:
 
 For issues with multi-line descriptions or code examples, write the body to a temp file and use `--body-file`:
 ```bash
-cat > /tmp/bd-issue-body.md << 'ISSUE_EOF'
+cat > /tmp/bd-issue-readability.md << 'ISSUE_EOF'
 **File**: src/services/dataTransformer.js
 **Line(s)**: 87-145
 **Description**: The `transformUserData` function is too long (58 lines) and handles too many responsibilities
@@ -89,7 +89,7 @@ bd create "transformUserData function too long and complex" \
   --parent <EPIC_ID> \
   -p 1 \
   -l "code-review,reviewer:readability" \
-  --body-file /tmp/bd-issue-body.md \
+  --body-file /tmp/bd-issue-readability.md \
   --silent
 ```
 

@@ -61,7 +61,7 @@ Priority mapping:
 
 For issues with multi-line descriptions or code examples, write the body to a temp file and use `--body-file`:
 ```bash
-cat > /tmp/bd-issue-body.md << 'ISSUE_EOF'
+cat > /tmp/bd-issue-logic.md << 'ISSUE_EOF'
 **File**: src/auth/authenticator.js
 **Line(s)**: 42-45
 **Description**: The function doesn't check if the user object is null before accessing its properties
@@ -92,7 +92,7 @@ bd create "Missing null check in authenticateUser" \
   --parent <EPIC_ID> \
   -p 1 \
   -l "code-review,reviewer:logic" \
-  --body-file /tmp/bd-issue-body.md \
+  --body-file /tmp/bd-issue-logic.md \
   --silent
 ```
 

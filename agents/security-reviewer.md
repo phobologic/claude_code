@@ -61,7 +61,7 @@ Priority mapping:
 
 For issues with multi-line descriptions or code examples, write the body to a temp file and use `--body-file`:
 ```bash
-cat > /tmp/bd-issue-body.md << 'ISSUE_EOF'
+cat > /tmp/bd-issue-security.md << 'ISSUE_EOF'
 **File**: src/database/queries.js
 **Line(s)**: 27-29
 **Description**: User input is directly concatenated into SQL query without parameterization, allowing SQL injection attacks
@@ -83,7 +83,7 @@ bd create "SQL injection vulnerability in user query" \
   --parent <EPIC_ID> \
   -p 0 \
   -l "code-review,reviewer:security" \
-  --body-file /tmp/bd-issue-body.md \
+  --body-file /tmp/bd-issue-security.md \
   --silent
 ```
 

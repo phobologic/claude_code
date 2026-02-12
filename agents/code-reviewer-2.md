@@ -60,7 +60,7 @@ Priority mapping:
 
 For issues with multi-line descriptions or code examples, write the body to a temp file and use `--body-file`:
 ```bash
-cat > /tmp/bd-issue-body.md << 'ISSUE_EOF'
+cat > /tmp/bd-issue-perf.md << 'ISSUE_EOF'
 **File**: src/utils/dataProcessor.js
 **Line(s)**: 105-130
 **Description**: The function uses an O(n²) nested loop implementation for data that could be processed in O(n log n) time
@@ -101,7 +101,7 @@ bd create "O(n²) algorithm in findDuplicates" \
   --parent <EPIC_ID> \
   -p 1 \
   -l "code-review,reviewer:perf" \
-  --body-file /tmp/bd-issue-body.md \
+  --body-file /tmp/bd-issue-perf.md \
   --silent
 ```
 
