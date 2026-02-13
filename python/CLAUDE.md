@@ -55,7 +55,13 @@ available for manual checks or pre-commit verification.
 
 ## Testing Conventions
 
-- Run: `uv run pytest`
+- **Invocation strategy** — minimize context usage with tight output by default:
+  - **Full suite:** `uv run pytest -q --tb=short` — dots for passing tests,
+    short tracebacks only on failure
+  - **Specific files/tests:** `uv run pytest -v path/to/test.py` — verbose is
+    fine for targeted runs (small output)
+  - **On failure follow-up:** `uv run pytest --lf -v --tb=short` — rerun only
+    the tests that failed, now with verbose per-test output
 - Group related tests in classes (e.g., `TestSessionConfig`, `TestParseDirectives`)
 - Mock subprocess with `unittest.mock.patch` + `MagicMock` — never call external CLIs
 - Filesystem isolation via `tmp_path`
