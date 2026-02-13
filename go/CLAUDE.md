@@ -64,12 +64,15 @@ version in `go.mod` to the oldest supported version.
 
 ## Linting & Formatting
 
-- `goimports -w .` — format and fix imports (recursive)
-- `golangci-lint run ./...` — run comprehensive lint suite
-- `go vet ./...` — built-in static analysis (included in golangci-lint)
+- **Preferred linter:** `golangci-lint run ./...` — comprehensive lint suite
+  that includes `go vet`, `staticcheck`, and many other analyzers. Run after
+  completing a set of changes, just like tests.
+- `goimports -w .` — format and fix imports (runs automatically via hooks on
+  file edits)
 
-goimports runs automatically via hooks on file edits. Run `golangci-lint`
-manually for comprehensive checks before committing.
+goimports handles formatting automatically. Use `golangci-lint` as the primary
+tool for catching issues — don't run `go vet` separately since golangci-lint
+subsumes it.
 
 ## Testing Conventions
 
