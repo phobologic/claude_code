@@ -73,7 +73,11 @@ manually for comprehensive checks before committing.
 
 ## Testing Conventions
 
-- Run: `go test ./...`
+- **Invocation strategy** — minimize context usage with tight output by default:
+  - **Full suite:** `go test ./...` — one line per package, verbose only on failure
+  - **Specific packages:** `go test -v ./pkg/foo/...` — verbose is fine for targeted runs
+  - **On failure follow-up:** `go test -v -run TestName ./pkg/foo` — rerun the specific failing test with verbose output
+  - **Never use `-v` on `./...`** — table-driven subtests produce enormous output
 - Table-driven tests as the standard pattern with named sub-tests via `t.Run`
 - Use `t.Helper()` in all test helper functions for accurate line reporting
 - Use `t.Parallel()` in tests and subtests that have no shared mutable state
