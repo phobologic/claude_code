@@ -13,58 +13,98 @@ You are an expert partner, not an assistant. Bring your own technical judgment a
 - **The user makes final calls.** After you've raised concerns and made your case, respect the decision and move forward. Don't relitigate.
 - **Explain, but be concise.** Give enough reasoning to be useful, not so much that it buries the point.
 
+## Planning
+
+When presenting a plan, always end with an **Expected Changes** section that describes
+the observable difference once the plan is complete — what will behave differently,
+what files or outputs will exist, what problems will be solved. Keep it brief (3–5 bullet
+points or a short paragraph). This is distinct from listing steps; it answers
+"what will be true when this is done?"
+
+## Bash Commands
+
+Before running a complex bash command, explain in plain English what it does and why.
+"Complex" means any command that uses:
+- Pipes chaining multiple commands (`|`)
+- Command substitution (`$(...)` or backticks)
+- Logical chaining (`&&`, `||`) with more than two parts
+- In-place file edits (`sed -i`, `awk` rewrites, `xargs` mutations)
+- Non-obvious flags or combinations that aren't self-evident from the command name
+
+Simple commands (`git status`, `go test ./...`, `npm install`) do not need narration.
+The explanation should appear as regular text immediately before the tool call — one or
+two sentences on what the command accomplishes, not a line-by-line breakdown.
+
 ## Git Safety
 
 - **Never run `git push`**. The user will push manually.
 
-## Issue Tracking (Beads)
+## Testing
 
-This project uses **bd** (beads) for issue tracking. Issues are stored in
-`.beads/` as a SQLite database with JSONL git sync.
+- **Never hit real external APIs in tests.** Always mock AI clients, payment providers,
+  email services, and any other third-party API. Tests that make real network calls are
+  fragile, slow, and can cause side effects.
+- **Run the full test suite after editing tests**, not just the file you changed. Cross-test
+  contamination (shared state, fixture ordering, monkey-patching) only shows up at the suite level.
 
-**When to use beads** — Use `bd` for all task/issue tracking instead of
-markdown files, TodoWrite, or TaskCreate. Create issues before starting work,
-claim them with `--status in_progress`, and close them when done.
+## Issue Tracking (Tickets)
+
+This project uses **tk** (tickets) for issue tracking. Tickets are stored as
+markdown files in `.tickets/`, tracked directly by git.
+
+**When to use tickets** — Use `tk` for all task/issue tracking instead of
+markdown files, TodoWrite, or TaskCreate. Create tickets before starting work,
+claim them with `tk start`, and close them when done.
 
 **Essential commands:**
 
 ```
-bd ready                                    # Show unblocked work
-bd show <id>                                # View issue details
-bd create --title="..." --type=task -p 2    # Create issue (priority 0-4)
-bd update <id> --status=in_progress         # Claim work
-bd close <id>                               # Complete work
-bd dep add <child> <parent>                 # child depends on parent
-bd sync                                     # Sync with git
+tk ready                                    # Show unblocked work
+tk show-multi <id> [id2 id3 ...]            # View multiple tickets (PREFER over repeated tk show)
+tk show <id>                                # View a single ticket
+tk create "..." -t task -p 2                # Create ticket (priority 0-4)
+tk start <id>                               # Claim work
+tk close <id>                               # Complete work
+tk dep <child> <parent>                     # child depends on parent
 ```
 
 **Workflow:**
 
-1. `bd ready` — find available work
-2. `bd update <id> --status=in_progress` — claim it
+1. `tk ready` — find available work
+2. `tk start <id>` — claim it
 3. Do the work
-4. `bd close <id>` — mark complete
-5. `bd sync` — sync at session end
+4. `tk add-note <id> "Summary of what was done and any key decisions made"` — document the work
+5. `tk close <id>` — mark complete
+6. Include the closed ticket file in the git commit alongside the code changes
+
+After creating and configuring a ticket (dependencies, parent, initial notes), commit the `.tickets/` files immediately — the ticket may not be worked on right away, and untracked ticket files are easy to lose.
+
+When viewing tickets, always use `tk show-multi id1 id2 ...` — even for two tickets. Only use `tk show` when you have exactly one ID and no others are needed.
+
+**Note:** Always add a note before closing a ticket. Notes serve as institutional memory —
+future agents and sessions can read closed tickets to understand *why* decisions were made,
+not just *what* was done. Be specific: mention files changed, approaches considered,
+and any gotchas encountered.
 
 **Epics and hierarchy:**
 
-- Create epics with `--type=epic` to group related work (e.g., code review
+- Create epics with `-t epic` to group related work (e.g., code review
   findings, multi-part features)
-- Attach children with `--parent=<epic-id>` on `bd create`
-- Children get hierarchical IDs: `epic-id.1`, `epic-id.2`, etc.
+- Attach children with `--parent <epic-id>` on `tk create` (no `=` sign)
 - Types: `bug`, `task`, `feature`, `epic`, `chore`
 
 ```
-bd create --title="Improve X" --type=epic -p 1 -d "..."
-bd create --title="Fix Y" --type=bug -p 1 --parent=<epic-id> -d "..."
+tk create "Improve X" -t epic -p 1 -d "..."
+tk create "Fix Y" -t bug -p 1 --parent <epic-id> -d "..."
 ```
 
 **Rules:**
 
 - Priority uses integers 0-4 (0=critical, 4=backlog), not words
-- Never use `bd edit` — it opens `$EDITOR` which blocks agents
-- Run `bd sync` before ending a session
-- Use `bd prime` for full workflow context after compaction or new session
+- Never use `tk edit` — it opens `$EDITOR` which blocks agents
+- Use `tk add-note <id> "text"` to append context instead of editing
+- `--parent` sets a parent epic; `tk dep <child> <parent>` sets a dependency — these are different things, don't conflate them
+- Commit new ticket files immediately after creation — don't leave them as untracked changes
 
 ## Living Document
 
@@ -74,3 +114,53 @@ CLAUDE.md is the source of truth for project conventions. When writing code:
 2. If you notice a recurring pattern not yet listed, point it out to the user
 3. On user confirmation, add the pattern to `CLAUDE.local.md` (project-specific conventions that evolve during development)
 4. Keep entries concise — every line should prevent a future inconsistency
+
+<!-- repoguide:start -->
+## repoguide — Repository Map
+
+Run `repoguide` at the start of any task for a PageRank-ordered map of files,
+symbols, and deps. Output is cached automatically to `.repoguide-cache` in the
+repo root (add it to `.gitignore`). Skip if the command fails.
+
+**Initial run — choose based on codebase size:**
+- Small repos (<20 files): `repoguide` — full map (files + symbols + deps + calls)
+- Larger repos: `repoguide --brief` — files table only (~2KB, always fits in context)
+
+For repos over ~20 files, the full output typically exceeds Claude Code's display
+limit. **That's fine** — the `files` table is the key deliverable from the initial
+run. Read top files in ranked order. Then use focused queries for depth.
+
+**Run it:**
+```bash
+repoguide                                    # full map (cached to .repoguide-cache)
+repoguide --brief                            # files table only, always compact
+repoguide -n 20                              # top 20 files
+repoguide -l go,typescript                   # filter by language
+repoguide --cache /tmp/myrepo.cache          # override default cache location
+repoguide --with-tests                       # include test files
+repoguide --symbol BuildGraph                # callsites + callees for a symbol
+repoguide --symbol RepoMap --members         # struct fields + methods
+repoguide --file internal/auth               # all symbols + deps for a path
+repoguide --symbol Handle --file server      # combine filters (AND)
+```
+
+All flags: `repoguide --help`
+
+**During implementation — use focused queries instead of grep:**
+
+1. **About to grep an exported name? Run `repoguide --symbol <name>` first.**
+   Returns definition location + every callsite (file+line). Feed those line numbers
+   to `Read(offset=N, limit=10)`. Fall back to Grep only for unexported names or
+   string literals. **Never pipe `--symbol`/`--file` output through `head` or `tail`.**
+
+2. **To understand a struct/class shape:** `repoguide --symbol <TypeName> --members`
+   returns all fields + methods with exact line numbers.
+
+3. **To find all dependents of a module:** `repoguide --file <path>` lists every
+   importer. Use before "I'm replacing X — who depends on it?"
+
+4. **Re-run after large structural changes** (new files, restructured imports).
+
+**Subagents:** Include the ranked file list in subagent prompts. Do not send
+Explore agents to discover structure repoguide already provides.
+<!-- repoguide:end -->
