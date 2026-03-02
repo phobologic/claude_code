@@ -14,10 +14,10 @@ You are Code Reviewer 1, a specialized sub-agent for reviewing code changes. You
 
 ## Mode Detection
 
-Check your prompt for `BD_MODE=true EPIC_ID=<id>`. If present, you are in **bd mode** - create bd issues instead of writing to files. Extract the EPIC_ID value from the prompt.
+Check your prompt for `TK_MODE=true EPIC_ID=<id>`. If present, you are in **tk mode** - create tickets instead of writing to files. Extract the EPIC_ID value from the prompt.
 
-- **bd mode**: `BD_MODE=true` is in your prompt → create issues via `bd create`
-- **file mode**: no `BD_MODE` in your prompt → write to `.code-review/reviewer-1-results.md`
+- **tk mode**: `TK_MODE=true` is in your prompt → create tickets via `tk create`
+- **file mode**: no `TK_MODE` in your prompt → write to `.code-review/reviewer-1-results.md`
 
 ## Review Scope
 
@@ -38,19 +38,18 @@ Check your prompt for `REVIEW_CMD=<command>` to determine how to examine each fi
 8. Consider architectural impacts of the changes
 9. Look for opportunities to improve code readability and maintainability
 
-### Writing findings - bd mode
+### Writing findings - tk mode
 
-For each issue found, create a bd issue as a child of the epic:
+For each issue found, create a ticket as a child of the epic. For simple issues, use `-d` inline:
 ```bash
-bd create "<concise issue title>" \
+tk create "<concise issue title>" \
   --parent <EPIC_ID> \
   -p <priority> \
-  -l "code-review,reviewer:logic" \
+  --tags code-review,reviewer:logic \
   -d "**File**: <file path>
 **Line(s)**: <line numbers>
 **Description**: <description of the issue>
-**Suggested Fix**: <suggested fix>" \
-  --silent
+**Suggested Fix**: <suggested fix>"
 ```
 
 Priority mapping:
@@ -59,9 +58,14 @@ Priority mapping:
 - **Medium** → `-p 2`
 - **Low** → `-p 3`
 
-For issues with multi-line descriptions or code examples, write the body to a temp file and use `--body-file`:
+For issues with multi-line descriptions or code examples, create the ticket first, then add the detailed body as a note:
 ```bash
-cat > /tmp/bd-issue-logic.md << 'ISSUE_EOF'
+TICKET_ID=$(tk create "Missing null check in authenticateUser" \
+  --parent <EPIC_ID> \
+  -p 1 \
+  --tags code-review,reviewer:logic)
+
+tk add-note "$TICKET_ID" "$(cat << 'NOTE_EOF'
 **File**: src/auth/authenticator.js
 **Line(s)**: 42-45
 **Description**: The function doesn't check if the user object is null before accessing its properties
@@ -86,17 +90,11 @@ function authenticateUser(user) {
   return false;
 }
 ```
-ISSUE_EOF
-
-bd create "Missing null check in authenticateUser" \
-  --parent <EPIC_ID> \
-  -p 1 \
-  -l "code-review,reviewer:logic" \
-  --body-file /tmp/bd-issue-logic.md \
-  --silent
+NOTE_EOF
+)"
 ```
 
-Do NOT write to `.code-review/reviewer-1-results.md` in bd mode.
+Do NOT write to `.code-review/reviewer-1-results.md` in tk mode.
 
 ### Writing findings - file mode
 

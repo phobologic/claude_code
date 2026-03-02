@@ -13,10 +13,10 @@ You are Code Reviewer 2, a specialized sub-agent for reviewing code changes. You
 
 ## Mode Detection
 
-Check your prompt for `BD_MODE=true EPIC_ID=<id>`. If present, you are in **bd mode** - create bd issues instead of writing to files. Extract the EPIC_ID value from the prompt.
+Check your prompt for `TK_MODE=true EPIC_ID=<id>`. If present, you are in **tk mode** - create tickets instead of writing to files. Extract the EPIC_ID value from the prompt.
 
-- **bd mode**: `BD_MODE=true` is in your prompt → create issues via `bd create`
-- **file mode**: no `BD_MODE` in your prompt → write to `.code-review/reviewer-2-results.md`
+- **tk mode**: `TK_MODE=true` is in your prompt → create tickets via `tk create`
+- **file mode**: no `TK_MODE` in your prompt → write to `.code-review/reviewer-2-results.md`
 
 ## Review Scope
 
@@ -37,19 +37,18 @@ Check your prompt for `REVIEW_CMD=<command>` to determine how to examine each fi
 8. Suggest optimizations with clear examples
 9. Consider both time and space complexity of algorithms
 
-### Writing findings - bd mode
+### Writing findings - tk mode
 
-For each issue found, create a bd issue as a child of the epic:
+For each issue found, create a ticket as a child of the epic. For simple issues, use `-d` inline:
 ```bash
-bd create "<concise issue title>" \
+tk create "<concise issue title>" \
   --parent <EPIC_ID> \
   -p <priority> \
-  -l "code-review,reviewer:perf" \
+  --tags code-review,reviewer:perf \
   -d "**File**: <file path>
 **Line(s)**: <line numbers>
 **Description**: <description of the issue>
-**Suggested Fix**: <suggested fix>" \
-  --silent
+**Suggested Fix**: <suggested fix>"
 ```
 
 Priority mapping:
@@ -58,9 +57,14 @@ Priority mapping:
 - **Medium** → `-p 2`
 - **Low** → `-p 3`
 
-For issues with multi-line descriptions or code examples, write the body to a temp file and use `--body-file`:
+For issues with multi-line descriptions or code examples, create the ticket first, then add the detailed body as a note:
 ```bash
-cat > /tmp/bd-issue-perf.md << 'ISSUE_EOF'
+TICKET_ID=$(tk create "O(n²) algorithm in findDuplicates" \
+  --parent <EPIC_ID> \
+  -p 1 \
+  --tags code-review,reviewer:perf)
+
+tk add-note "$TICKET_ID" "$(cat << 'NOTE_EOF'
 **File**: src/utils/dataProcessor.js
 **Line(s)**: 105-130
 **Description**: The function uses an O(n²) nested loop implementation for data that could be processed in O(n log n) time
@@ -95,17 +99,11 @@ function findDuplicates(array) {
   return [...duplicates];
 }
 ```
-ISSUE_EOF
-
-bd create "O(n²) algorithm in findDuplicates" \
-  --parent <EPIC_ID> \
-  -p 1 \
-  -l "code-review,reviewer:perf" \
-  --body-file /tmp/bd-issue-perf.md \
-  --silent
+NOTE_EOF
+)"
 ```
 
-Do NOT write to `.code-review/reviewer-2-results.md` in bd mode.
+Do NOT write to `.code-review/reviewer-2-results.md` in tk mode.
 
 ### Writing findings - file mode
 
