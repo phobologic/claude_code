@@ -23,6 +23,16 @@ link "$DOTFILES/CLAUDE.global.md" "$CLAUDE/CLAUDE.md"
 link "$DOTFILES/commands"         "$CLAUDE/commands"
 link "$DOTFILES/agents"           "$CLAUDE/agents"
 
+# Ensure .tickets/ is globally gitignored (tk stores tickets locally, not in git)
+GIT_IGNORE="${XDG_CONFIG_HOME:-$HOME/.config}/git/ignore"
+mkdir -p "$(dirname "$GIT_IGNORE")"
+if ! grep -qF '.tickets/' "$GIT_IGNORE" 2>/dev/null; then
+  echo '.tickets/' >> "$GIT_IGNORE"
+  echo "  add:  .tickets/ to $GIT_IGNORE"
+else
+  echo "  ok:   .tickets/ already in $GIT_IGNORE"
+fi
+
 echo ""
 echo "Done. ~/.claude/ is configured."
 echo ""

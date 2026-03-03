@@ -50,7 +50,7 @@ two sentences on what the command accomplishes, not a line-by-line breakdown.
 ## Issue Tracking (Tickets)
 
 This project uses **tk** (tickets) for issue tracking. Tickets are stored as
-markdown files in `.tickets/`, tracked directly by git.
+markdown files in `.tickets/` (gitignored — local only, not committed).
 
 **When to use tickets** — Use `tk` for all task/issue tracking instead of
 markdown files, TodoWrite, or TaskCreate. Create tickets before starting work,
@@ -75,9 +75,6 @@ tk dep <child> <parent>                     # child depends on parent
 3. Do the work
 4. `tk add-note <id> "Summary of what was done and any key decisions made"` — document the work
 5. `tk close <id>` — mark complete
-6. Include the closed ticket file in the git commit alongside the code changes
-
-After creating and configuring a ticket (dependencies, parent, initial notes), commit the `.tickets/` files immediately — the ticket may not be worked on right away, and untracked ticket files are easy to lose.
 
 When viewing tickets, always use `tk show-multi id1 id2 ...` — even for two tickets. Only use `tk show` when you have exactly one ID and no others are needed.
 
@@ -104,7 +101,7 @@ tk create "Fix Y" -t bug -p 1 --parent <epic-id> -d "..."
 - Never use `tk edit` — it opens `$EDITOR` which blocks agents
 - Use `tk add-note <id> "text"` to append context instead of editing
 - `--parent` sets a parent epic; `tk dep <child> <parent>` sets a dependency — these are different things, don't conflate them
-- Commit new ticket files immediately after creation — don't leave them as untracked changes
+- Tickets are gitignored — no need to commit them
 
 ## Living Document
 
