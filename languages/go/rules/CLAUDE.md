@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/*.go"
+---
+
 # Go Conventions
 
 Reusable Go rules. Include from project-level CLAUDE.md files.

@@ -1,49 +1,44 @@
-# Tool Plugins
+# Tool Rules
 
-Each subdirectory is a Claude Code plugin providing CLI conventions and coding patterns
-for deployment and database tooling.
+Per-tool Claude Code rules for deployment and database tooling. Each file is a plain
+markdown reference that gets loaded via `.claude/rules/` symlinks.
 
-## Available Plugins
+## Available Tools
 
-| Plugin | Description |
-|--------|-------------|
-| `railway/` | Railway CLI cheat sheet and safety conventions |
-| `sqlalchemy/` | SQLAlchemy async patterns and Alembic migration conventions |
+| File | Description |
+|------|-------------|
+| `railway.md` | Railway CLI cheat sheet and safety conventions |
+| `sqlalchemy.md` | SQLAlchemy async patterns and Alembic migration conventions |
 
-## Installing into a Project
+## Adding to a Project
 
-The plugin system is a two-step process: add the marketplace catalog once, then install
-individual plugins per project.
-
-**Step 1 — add the marketplace (once per machine):**
-```
-/plugin marketplace add ~/git/claude_code/tools
-```
-
-**Step 2 — install a plugin in your project:**
-```
-/plugin install claude-railway@claude-tools
-/plugin install claude-sqlalchemy@claude-tools
-```
-
-This makes the plugin's `rules/CLAUDE.md` available automatically — no `settings.json`
-editing required. Multiple plugins can be active simultaneously.
-
-## Plugin Structure
+The easiest way is with the global slash commands (available after running `./install.sh`):
 
 ```
-<tool>/
-├── .claude-plugin/
-│   └── plugin.json        # name, version, description
-└── rules/
-    └── CLAUDE.md          # conventions and reference (loaded when plugin is active)
+/use-railway      # Sets up railway.md rules for this project
+/use-sqlalchemy   # Sets up sqlalchemy.md rules for this project
 ```
 
-These plugins are rules-only (no hooks). Hooks may be added in the future if needed.
+Claude will create the `.claude/rules/` symlink automatically.
 
-## Adding a New Tool Plugin
+Or manually:
 
-1. Create `tools/<tool>/`
-2. Add `.claude-plugin/plugin.json` with name/version/description
-3. Add `rules/CLAUDE.md` with the CLI reference and conventions
-4. Register the plugin in `tools/.claude-plugin/marketplace.json`
+```bash
+mkdir -p .claude/rules
+ln -s ~/git/claude_code/tools/railway.md .claude/rules/railway.md
+ln -s ~/git/claude_code/tools/sqlalchemy.md .claude/rules/sqlalchemy.md
+```
+
+Rules take effect immediately in the next Claude Code session (or after `/memory` refresh).
+
+## Why symlinks?
+
+Claude Code loads rules from `.claude/rules/*.md` automatically. Symlinking into this
+repo means rules stay in sync — edit `tools/railway.md` once and every project using
+it picks up the change.
+
+## Adding a New Tool
+
+1. Create `tools/<tool>.md` with CLI reference and conventions
+2. Update this README
+3. Create `commands/use-<tool>.md` as a global slash command for easy setup

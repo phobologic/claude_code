@@ -1,16 +1,16 @@
 # Claude Code Dotfiles
 
 Personal Claude Code dotfiles — global slash commands, multi-agent code review, language plugins,
-tool plugins, and working style rules for `~/.claude/`.
+tool rules, and working style rules for `~/.claude/`.
 
 ## What's Here
 
 | Directory | Purpose |
 |-----------|---------|
-| `commands/` | Global slash commands: `/review`, `/multi-review`, `/migrate-beads` |
+| `commands/` | Global slash commands: `/review`, `/multi-review`, `/use-railway`, `/use-sqlalchemy`, … |
 | `agents/` | 5 specialized code review sub-agents |
-| `languages/` | Per-language Claude Code plugins (Go, Python) |
-| `tools/` | Per-tool Claude Code plugins (Railway, SQLAlchemy) |
+| `languages/` | Per-language Claude Code plugins (Go, Python) — auto-formatting hooks + rules |
+| `tools/` | Per-tool rule files (Railway, SQLAlchemy) — loaded via `.claude/rules/` symlinks |
 | `bin/` | Utility scripts (tk plugins, etc.) |
 | `CLAUDE.global.md` | Global CLAUDE.md with personal working style rules |
 | `install.sh` | Sets up `~/.claude/` symlinks from scratch |
@@ -27,15 +27,15 @@ This creates:
 - `~/.claude/CLAUDE.md` → `CLAUDE.global.md`
 - `~/.claude/commands/` → `commands/`
 - `~/.claude/agents/` → `agents/`
+- `~/.claude/rules/go.md` → `languages/go/rules/CLAUDE.md` *(path-scoped to `*.go` files)*
+- `~/.claude/rules/python.md` → `languages/python/rules/CLAUDE.md` *(path-scoped to `*.py` files)*
 
-## Plugins
+## Language Plugins
 
-The plugin system uses a two-step workflow: add a marketplace once per machine, then install
-individual plugins per project. Multiple plugins can be active simultaneously.
+Language plugins provide **auto-formatting hooks** (goimports for Go, ruff for Python).
+Rules (coding conventions) are installed globally by `install.sh` above — no extra step needed.
 
-### Language Plugins
-
-Auto-formatting hooks and coding conventions for Go and Python.
+To activate formatting hooks in a project:
 
 **Step 1 — add the marketplace once per machine:**
 ```
@@ -48,26 +48,19 @@ Auto-formatting hooks and coding conventions for Go and Python.
 /plugin install claude-python@claude-languages
 ```
 
-This activates auto-formatting (goimports for Go, ruff for Python) with zero `settings.json`
-editing. See [`languages/README.md`](languages/README.md) for details.
+See [`languages/README.md`](languages/README.md) for details.
 
-### Tool Plugins
+## Tool Rules
 
-CLI reference and conventions for Railway deployment and async SQLAlchemy/Alembic.
+CLI reference and conventions for deployment and database tooling. Rules are loaded
+per-project via `.claude/rules/` symlinks. Use the global slash commands to set them up:
 
-**Step 1 — add the marketplace once per machine:**
 ```
-/plugin marketplace add ~/git/claude_code/tools
-```
-
-**Step 2 — install in your project:**
-```
-/plugin install claude-railway@claude-tools
-/plugin install claude-sqlalchemy@claude-tools
+/use-railway      # Railway CLI conventions (run in your project)
+/use-sqlalchemy   # SQLAlchemy async + Alembic conventions (run in your project)
 ```
 
-These are rules-only plugins (no hooks) — they load CLI cheat sheets and safety conventions
-automatically when active. See [`tools/README.md`](tools/README.md) for details.
+Claude will create the symlink automatically. See [`tools/README.md`](tools/README.md) for details.
 
 ## Review Commands
 

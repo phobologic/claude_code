@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/*.py"
+---
+
 # Python Conventions
 
 Reusable Python rules. Include from project-level CLAUDE.md files.

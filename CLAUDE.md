@@ -6,15 +6,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository is the source of truth for `~/.claude/` — personal Claude Code dotfiles.
 It provides global slash commands, sub-agents for multi-agent code review, a global CLAUDE.md
-with working style rules, and per-language plugins for auto-formatting.
+with working style rules, language plugins for auto-formatting, and tool rules for deployment
+and database conventions.
 
 ## Repository Structure
 
 ```
-commands/       Global slash commands (review, multi-review, migrate-beads)
+commands/       Global slash commands (review, multi-review, use-railway, use-sqlalchemy, …)
 agents/         Sub-agents for multi-agent code review (5 specialized reviewers)
-languages/      Per-language Claude Code plugins (go, python)
-tools/          Per-tool Claude Code plugins (railway, sqlalchemy)
+languages/      Per-language Claude Code plugins (go, python) — hooks + rules
+tools/          Per-tool rules files (railway, sqlalchemy) — loaded via .claude/rules/ symlinks
 bin/            Utility scripts (tk plugins, etc.)
 docs/           Documentation and migration guides
 CLAUDE.global.md  Global CLAUDE.md — symlinked to ~/.claude/CLAUDE.md
@@ -27,8 +28,10 @@ Run `./install.sh` to configure `~/.claude/`:
 - `~/.claude/CLAUDE.md` → `CLAUDE.global.md`
 - `~/.claude/commands/` → `commands/`
 - `~/.claude/agents/` → `agents/`
+- `~/.claude/rules/go.md` → `languages/go/rules/CLAUDE.md`
+- `~/.claude/rules/python.md` → `languages/python/rules/CLAUDE.md`
 
-To add language support to a project:
+To add language auto-formatting hooks to a project:
 ```
 # Step 1 — add the marketplace once per machine:
 /plugin marketplace add ~/git/claude_code/languages
@@ -36,16 +39,6 @@ To add language support to a project:
 # Step 2 — install in your project:
 /plugin install claude-go@claude-languages
 /plugin install claude-python@claude-languages
-```
-
-To add tool/deployment plugins to a project:
-```
-# Step 1 — add the marketplace once per machine:
-/plugin marketplace add ~/git/claude_code/tools
-
-# Step 2 — install in your project:
-/plugin install claude-railway@claude-tools
-/plugin install claude-sqlalchemy@claude-tools
 ```
 
 ## Architecture
@@ -61,14 +54,16 @@ To add tool/deployment plugins to a project:
 
 ### Language Plugins
 - Each language in `languages/` is a Claude Code plugin
-- Plugins provide PostToolUse hooks for auto-formatting and coding convention rules
+- Plugins provide PostToolUse hooks for auto-formatting (goimports, ruff)
 - Installed per-project with `/plugin install` — no `settings.json` editing required
+- Rules (coding conventions) are loaded globally via `~/.claude/rules/` symlinks set up by `install.sh`
+- Rules are path-scoped: Go rules only load for `*.go` files, Python rules for `*.py` files
 - See `languages/README.md` for details
 
-### Tool Plugins
-- Each tool in `tools/` is a Claude Code plugin for deployment and database tooling
-- Plugins provide rules (CLI reference, conventions) loaded automatically when active
-- No hooks — rules-only plugins
+### Tool Rules
+- `tools/` contains plain markdown rule files for deployment and database tooling
+- Rules are loaded per-project by symlinking into `.claude/rules/`
+- Use `/use-railway` or `/use-sqlalchemy` commands to set up symlinks automatically
 - See `tools/README.md` for details
 
 ## Available Commands
@@ -76,6 +71,10 @@ To add tool/deployment plugins to a project:
 ### Review Commands
 - `/review` - Perform standard code review of uncommitted changes
 - `/multi-review` - Coordinate parallel reviews from 5 specialized agents
+
+### Tool Setup Commands
+- `/use-railway` - Symlink Railway CLI rules into this project's `.claude/rules/`
+- `/use-sqlalchemy` - Symlink SQLAlchemy/Alembic rules into this project's `.claude/rules/`
 
 ## Multi-Review Agent Specializations
 
