@@ -1,3 +1,9 @@
+---
+name: review
+description: Perform a senior code review of all uncommitted changes in the repository. Covers correctness, security, performance, readability, and test coverage.
+disable-model-invocation: true
+---
+
 You're a senior engineer performing a code review. I want you to analyze all **uncommitted files in this repository** (both staged and unstaged). You should have access to the file contents automatically.
 
 For each file you review:

@@ -1,3 +1,9 @@
+---
+name: migrate-beads
+description: Migrate this project's issue tracking from beads (bd) to tickets (tk).
+disable-model-invocation: true
+---
+
 # Migrate from Beads to Tickets
 
 Migrate this project's issue tracking from beads (bd) to tickets (tk).

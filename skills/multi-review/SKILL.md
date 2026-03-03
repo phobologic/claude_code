@@ -1,3 +1,9 @@
+---
+name: multi-review
+description: Perform a comprehensive code review using multiple specialized sub-agents in parallel. Covers logical correctness, performance, readability, and security. Creates tk tickets if tk is available, otherwise writes a report to .code-review/final-report.md.
+disable-model-invocation: true
+---
+
 # Multiple Code Reviewers
 
 This command performs a comprehensive code review using specialized sub-agents.

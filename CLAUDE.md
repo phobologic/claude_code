@@ -5,14 +5,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Repository Purpose
 
 This repository is the source of truth for `~/.claude/` — personal Claude Code dotfiles.
-It provides global slash commands, sub-agents for multi-agent code review, a global CLAUDE.md
+It provides global skills, sub-agents for multi-agent code review, a global CLAUDE.md
 with working style rules, language plugins for auto-formatting, and tool rules for deployment
 and database conventions.
 
 ## Repository Structure
 
 ```
-commands/       Global slash commands (review, multi-review, use-railway, use-sqlalchemy, …)
+skills/         Global skills (review, multi-review, implement-ticket, use-railway, …)
 agents/         Sub-agents for multi-agent code review (5 specialized reviewers)
 languages/      Per-language Claude Code plugins (go, python) — hooks + rules
 tools/          Per-tool rules files (railway, sqlalchemy) — loaded via .claude/rules/ symlinks
@@ -26,7 +26,7 @@ install.sh      Sets up ~/.claude/ symlinks from scratch
 
 Run `./install.sh` to configure `~/.claude/`:
 - `~/.claude/CLAUDE.md` → `CLAUDE.global.md`
-- `~/.claude/commands/` → `commands/`
+- `~/.claude/skills/` → `skills/`
 - `~/.claude/agents/` → `agents/`
 - `~/.claude/rules/go.md` → `languages/go/rules/CLAUDE.md`
 - `~/.claude/rules/python.md` → `languages/python/rules/CLAUDE.md`
@@ -43,9 +43,11 @@ To add language auto-formatting hooks to a project:
 
 ## Architecture
 
-### Slash Commands
-- Custom slash commands are stored in the `commands/` directory
-- Commands are loaded automatically and invoked using `/` prefix in interactive mode
+### Skills
+- Skills are stored in the `skills/` directory, one subdirectory per skill with a `SKILL.md`
+- Invoked with `/skill-name` or automatically by Claude when context matches the description
+- Skills with `disable-model-invocation: true` are user-only (for side-effect workflows)
+- See the [Claude Code skills docs](https://code.claude.com/docs/en/skills) for format details
 
 ### Sub-Agents
 - Specialized review agents are stored in the `agents/` directory
@@ -66,13 +68,16 @@ To add language auto-formatting hooks to a project:
 - Use `/use-railway` or `/use-sqlalchemy` commands to set up symlinks automatically
 - See `tools/README.md` for details
 
-## Available Commands
+## Available Skills
 
-### Review Commands
+### Review
 - `/review` - Perform standard code review of uncommitted changes
 - `/multi-review` - Coordinate parallel reviews from 5 specialized agents
 
-### Tool Setup Commands
+### Ticket Workflow
+- `/implement-ticket [id ...] [-- extra instructions]` - Pick up and implement tk tickets
+
+### Tool Setup
 - `/use-railway` - Symlink Railway CLI rules into this project's `.claude/rules/`
 - `/use-sqlalchemy` - Symlink SQLAlchemy/Alembic rules into this project's `.claude/rules/`
 
