@@ -11,9 +11,11 @@ fi
 
 # Fix lint issues, then format.
 # --unfixable F401: don't auto-remove unused imports (they may be added
-# before the code that uses them). A standalone `ruff check .` will
-# still report them so they can be addressed intentionally.
-# Allow ruff check to return non-zero (unfixable violations are expected
-# mid-edit) — the hook should still format and exit successfully.
+# before the code that uses them).
+# Allow the fix pass to exit non-zero (unfixable violations expected mid-edit).
 uv run ruff check --fix --unfixable F401 "$FILE_PATH" 2>&1 || true
 uv run ruff format "$FILE_PATH" 2>&1
+
+# Report any remaining violations so Claude can address them immediately
+# rather than having them surface at git push time.
+uv run ruff check "$FILE_PATH"
