@@ -66,6 +66,7 @@ tk create "..." -t task -p 2                # Create ticket (priority 0-4)
 tk start <id>                               # Claim work
 tk close <id>                               # Complete work
 tk dep <child> <parent>                     # child depends on parent
+tk query '<jq-filter>'                      # Filter tickets with jq
 ```
 
 **Workflow:**
@@ -93,6 +94,16 @@ and any gotchas encountered.
 ```
 tk create "Improve X" -t epic -p 1 -d "..."
 tk create "Fix Y" -t bug -p 1 --parent <epic-id> -d "..."
+```
+
+**Querying tickets:**
+
+`tk query` dumps all tickets as newline-delimited JSON and optionally pipes through a jq filter:
+
+```
+tk query                                    # Dump all tickets as JSON
+tk query '.type == "epic"'                  # List all epics
+tk query '.parent == "<epic-id>"'           # Find children of an epic
 ```
 
 **Rules:**
