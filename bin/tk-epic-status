@@ -187,4 +187,45 @@ for epic in open_epics:
 
 print(f"{'='*60}")
 print(f"Total open epics: {len(open_epics)}")
+
+# Unclaimed tickets: open, non-epic, not reachable from any open epic
+claimed_ids = set()
+for epic in open_epics:
+    for t in collect_epic_tickets(epic["id"]):
+        claimed_ids.add(t["id"])
+# Also exclude the epics themselves
+for epic in open_epics:
+    claimed_ids.add(epic["id"])
+
+unclaimed = [
+    t for t in all_tickets
+    if t.get("status", "open") != "closed"
+    and t.get("type") != "epic"
+    and t["id"] not in claimed_ids
+]
+
+print()
+print(f"{'='*60}")
+print(f"Unclaimed tickets (not part of any open epic): {len(unclaimed)}")
+
+if unclaimed:
+    by_priority = defaultdict(list)
+    for t in unclaimed:
+        by_priority[t.get("priority", "2")].append(t)
+
+    print()
+    for prio in sorted(by_priority.keys(), key=lambda p: int(p)):
+        label = PRIORITY_LABELS.get(prio, f"P{prio}")
+        sorted_tickets = sorted(by_priority[prio], key=priority_sort_key)
+        total = len(sorted_tickets)
+        shown = sorted_tickets[:MAX_PER_PRIORITY]
+
+        print(f"  {label}:")
+        for t in shown:
+            print(f"    [{t['id']}] ({t.get('type', 'task')}, {t.get('status', 'open')}) {t['title']}")
+
+        if total > MAX_PER_PRIORITY:
+            remaining = total - MAX_PER_PRIORITY
+            print(f"    ... and {remaining} more")
+        print()
 EOF

@@ -60,6 +60,7 @@ claim them with `tk start`, and close them when done.
 
 ```
 tk ready                                    # Show unblocked work
+tk epic-status                              # Overview of all open epics and unclaimed tickets
 tk show-multi <id> [id2 id3 ...]            # View multiple tickets (PREFER over repeated tk show)
 tk show <id>                                # View a single ticket
 tk create "..." -t task -p 2                # Create ticket (priority 0-4)
