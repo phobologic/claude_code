@@ -11,6 +11,17 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/ruff-stop.sh\"",
+            "timeout": 30
+          }
+        ]
+      }
     ]
   }
 }

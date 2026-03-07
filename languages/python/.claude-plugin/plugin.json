@@ -1,5 +1,5 @@
 {
   "name": "claude-python",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Python language support: ruff auto-formatting and lint-fix on file edits, Python coding conventions"
 }
