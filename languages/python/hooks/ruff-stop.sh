@@ -20,6 +20,11 @@ fi
 # Batch ruff check+fix across all modified files. Per-file fixing was already
 # done by PostToolUse, but cross-file issues may now be fixable now that all
 # files exist. --unfixable F401 kept consistent with the PostToolUse hook.
-# Exit non-zero if unfixable violations remain so Claude sees the output.
-echo "$CHANGED_PY" | xargs uv run ruff check --fix --unfixable F401
-echo "$CHANGED_PY" | xargs uv run ruff check
+echo "$CHANGED_PY" | xargs uv run ruff check --fix --unfixable F401 || true
+
+# Check pass — capture output to report violations to Claude via structured JSON.
+RUFF_OUTPUT=$(echo "$CHANGED_PY" | xargs uv run ruff check 2>&1 || true)
+
+if [[ -n "$RUFF_OUTPUT" ]]; then
+  echo "{\"decision\": \"block\", \"reason\": $(echo "$RUFF_OUTPUT" | jq -Rs .)}"
+fi
