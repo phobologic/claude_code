@@ -30,6 +30,7 @@ Before running a complex bash command, explain in plain English what it does and
 - Logical chaining (`&&`, `||`) with more than two parts
 - In-place file edits (`sed -i`, `awk` rewrites, `xargs` mutations)
 - Non-obvious flags or combinations that aren't self-evident from the command name
+- Inline scripts passed to an interpreter (`python3 -c "..."`, heredocs piped to `python`/`node`/`bash`, etc.)
 
 Simple commands (`git status`, `go test ./...`, `npm install`) do not need narration.
 The explanation should appear as regular text immediately before the tool call — one or
