@@ -71,3 +71,32 @@ available for manual checks or pre-commit verification.
 - Mock subprocess with `unittest.mock.patch` + `MagicMock` — never call external CLIs
 - Filesystem isolation via `tmp_path`
 - No network calls, no external service dependencies
+
+## Preferred Libraries
+
+When adding a dependency, default to these unless there's a specific reason not to.
+
+**Data persistence**
+- ORM: SQLAlchemy with `asyncio` extra (`sqlalchemy[asyncio]`)
+- Local dev database: SQLite via `aiosqlite` driver
+- Production database: PostgreSQL via `asyncpg`
+- Migrations: Alembic
+
+**Web**
+- Framework: FastAPI (`fastapi[standard]`)
+- Templates: Jinja2
+
+**CLI**
+- Argument parsing / commands: Typer
+- Terminal output: Rich
+
+**HTTP**
+- Client (requests, test client): `httpx` — async-compatible, works with FastAPI's `TestClient`
+
+**AI**
+- Anthropic SDK: `anthropic`
+- Structured outputs from LLMs: `instructor`
+
+**Testing extras**
+- `pytest-asyncio` — async test support (already in default scaffold)
+- `pytest-socket` — disable accidental network calls in tests
