@@ -74,11 +74,20 @@ Run `tk start <id>` to claim the ticket, then implement according to the approve
 2. Run the full test suite
 3. Fix any failures before continuing — do not proceed with a broken suite
 
-## Phase 7 — Commit + close
+## Phase 7 — Self-review
+
+Before committing, use the Skill tool to invoke the `review` skill. Read its output and triage findings:
+
+- **Critical issues found**: present them to the user, fix them, then repeat Phase 7 until the review is clean
+- **High issues found**: present them to the user and ask — fix now, or create a ticket and proceed?
+- **Medium findings**: the review skill will auto-create tk tickets; note the ticket IDs in the Phase 8 ticket note
+- **No Critical or High issues**: proceed to Phase 8
+
+## Phase 8 — Commit + close
 
 1. Stage relevant files and commit with a message that references the ticket ID
 2. `tk add-note <id> "..."` — record design decisions made in Phase 3, approaches
-   considered, and any gotchas encountered
+   considered, any gotchas encountered, and any review ticket IDs created in Phase 7
 3. `tk close <id>`
 4. Run `git status` and confirm it's clean
 
