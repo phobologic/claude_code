@@ -22,6 +22,10 @@ If `$ARGUMENTS` is non-empty, use that as the initial idea. Otherwise, ask:
 
 Wait for the user's response before proceeding.
 
+Once you have the idea, briefly orient the user before asking questions:
+
+> "I'll ask a few questions to pin down the scope, then draft a phased plan for your review. No tickets get created until you approve the plan."
+
 ## Phase 1 — Clarifying questions
 
 Read the idea carefully. Identify the decisions that will actually change how the work gets
@@ -171,11 +175,15 @@ Once the user approves, create all tickets. Work methodically through the hierar
 
 ### Step 5.1: Top-level epic
 
+Print: `"Creating top-level epic..."`
+
 ```bash
 TOP=$(tk create "<Feature / Project Name>" -t epic -p 2 -d "<goal sentence from the plan>")
 ```
 
 ### Step 5.2: Phase epics (one per phase, --parent $TOP)
+
+Print: `"Creating phase epics (<N> phases)..."`
 
 ```bash
 P1=$(tk create "Phase 1: <name>" -t epic -p 2 --parent $TOP -d "<phase objective>")
@@ -185,6 +193,8 @@ P3=$(tk create "Phase 3: <name>" -t epic -p 2 --parent $TOP -d "<phase objective
 ```
 
 ### Step 5.3: Task tickets (children of their phase epic)
+
+Print: `"Creating task tickets..."`
 
 Work through phases in order. Capture each ID.
 
@@ -206,6 +216,8 @@ T3_1=$(tk create "<Task 3.1 title>" -t task -p 2 --parent $P3 -d "<description>"
 
 ### Step 5.4: Intra-phase dependencies (sequential ordering within each phase)
 
+Print: `"Wiring intra-phase dependencies..."`
+
 Tasks within a phase usually build on each other — chain them:
 
 ```bash
@@ -218,6 +230,8 @@ tk dep $T2_2 $T2_1
 ```
 
 ### Step 5.5: Cross-phase dependencies — ONLY for genuine blockers
+
+Print: `"Wiring cross-phase dependencies..."`
 
 Wire the start of each phase to the end of the phase(s) it actually depends on.
 
